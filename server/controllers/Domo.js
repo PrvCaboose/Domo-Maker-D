@@ -27,9 +27,8 @@ const makeDomo = async (req, res) => {
       const docs = await Domo.find(query).select('name age').lean().exec();
 
       if (docs.length === 10) {
-        return res.status(400).json({error: 'Max Domos made!'});
+        return res.status(400).json({ error: 'Max Domos made!' });
       }
-
     } catch (err) {
       console.log(err);
       return res.status(500).json({ error: 'Error retrieving domos' });

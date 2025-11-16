@@ -32,7 +32,7 @@ const signup = async (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
   const pass2 = `${req.body.pass2}`;
-  const isPremium = req.body.isPremium;
+  const { isPremium } = req.body;
 
   if (!username || !pass || !pass2) {
     return req.status(400).json({ error: 'All fields are required!' });
@@ -57,9 +57,36 @@ const signup = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const username = `${req.body.username}`;
+  const pass = `${req.body.pass}`;
+  const pass2 = `${req.body.pass2}`;
+
+  console.log('changing password');
+
+  if (!username || !pass || !pass2) {
+    return req.status(400).json({ error: 'All fields are required!' });
+  }
+
+  if (pass !== pass2) {
+    return req.status(400).json({ error: 'Passwords do not match!' });
+  }
+
+  try {
+    const hash = await Account.generateHash(pass);
+    const query = { username };
+    await Account.findOneAndUpdate(query, { password: hash });
+    return res.json({ redirect: '/login' });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'An error ocurred, please try again!' });
+  }
+};
+
 module.exports = {
   loginPage,
   logout,
   login,
   signup,
+  changePassword,
 };
